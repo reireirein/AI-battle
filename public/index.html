@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI審判の議論システム</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="chat-container">
+        <h1>議論：無人島に1つだけ持っていくなら何？</h1>
+        <div id="chat-messages"></div>
+        <form id="chat-form">
+            <select id="player-select">
+                <option value="A">プレイヤーA</option>
+                <option value="B">プレイヤーB</option>
+            </select>
+            <input type="text" id="user-input" placeholder="メッセージを入力してください..." required>
+            <button type="submit">送信</button>
+        </form>
+        <button id="judge-button">AIによる審判</button>
+        <div id="result"></div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
