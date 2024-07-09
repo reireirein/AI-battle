@@ -19,16 +19,16 @@ app.get('/', (req, res) => {
 
 app.post('/judge', async (req, res) => {
     try {
-        const chatHistory = req.body.chatHistory;
+        const { chatHistory, topic } = req.body;
         const prompt = `
-            次の議論を分析し、客観的に勝者を判断してください。議論のテーマは「無人島に1つだけ持っていくなら何？」です。
+            次の議論を分析し、客観的に勝者を判断してください。議論のテーマは「${topic}」です。
             プレイヤーAとプレイヤーBの主張を評価し、より説得力のある議論を展開した方を勝者としてください。
             引き分けの場合は「引き分け」と判断してください。
             チャット履歴:
             ${chatHistory.map(msg => `プレイヤー${msg.player}: ${msg.message}`).join('\n')}
 
             判断結果を以下の形式で返してください：
-            勝者: [プレイヤーA or プレイヤーB or 引き分け]<br>
+            勝者: [プレイヤーA or プレイヤーB or 引き分け]
             理由: [簡潔な説明]
         `;
 

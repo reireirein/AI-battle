@@ -3,24 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI審判の議論システム</title>
+    <title>議論トピック一覧</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div id="chat-container">
-        <h1>議論：無人島に1つだけ持っていくなら何？</h1>
-        <div id="chat-messages"></div>
-        <form id="chat-form">
-            <select id="player-select">
-                <option value="A">プレイヤーA</option>
-                <option value="B">プレイヤーB</option>
-            </select>
-            <input type="text" id="user-input" placeholder="メッセージを入力してください..." required>
-            <button type="submit">送信</button>
-        </form>
-        <button id="judge-button">AIによる審判</button>
-        <div id="result"></div>
+    <div id="topic-list-container">
+        <h1>議論トピック一覧</h1>
+        <table id="topic-table">
+            <thead>
+                <tr>
+                    <th>トピック</th>
+                    <th>作成日</th>
+                    <th>アクション</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>無人島に1つだけ持っていくなら何？</td>
+                    <td>2024-07-01</td>
+                    <td><a href="/debate.html?topic=desert-island" class="button">議論に参加</a></td>
+                </tr>
+                <!-- 他のトピックをここに追加 -->
+            </tbody>
+        </table>
     </div>
-    <script src="script.js"></script>
 </body>
 </html>
