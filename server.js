@@ -1,48 +1,58 @@
 const express = require('express');
-const mysql = require('mysql2/promise'); // mysql2/promise を追加
-const bodyParser = require('body-parser');
-const bcrypt = require('bcrypt'); // bcrypt を追加
-
+const mysql = require('mysql2/promise');
 const app = express();
 const port = 3000;
 
-app.use(express.static('public'));
-app.use(bodyParser.json());
-
 const pool = mysql.createPool({
     host: 'localhost',
-    user: 'your_username',
-    password: 'your_password',
+    user: 'root',
+    password: '',
     database: 'chat_battle',
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0
 });
+
+app.use(express.static('public'));
+app.use(express.json());
 
 app.get('/topics', async (req, res) => {
     try {
-        const connection = await pool.getConnection();
-        const [rows] = await connection.query('SELECT * FROM threads ORDER BY created_at DESC');
-        connection.release();
-
+        const [rows] = await pool.query('SELECT * FROM thread ORDER BY created_at DESC');
         res.json(rows);
     } catch (error) {
         console.error('Error fetching topics:', error);
-        res.status(500).json({ message: 'トピックの取得に失敗しました' });
+        res.status(500).send('Server error');
     }
 });
 
-app.post('/delete-topic', async (req, res) => {
-    const { id } = req.body;
-    try {
-        const connection = await pool.getConnection();
-        await connection.execute('DELETE FROM threads WHERE id = ?', [id]);
-        connection.release();
+app.post('/new-topic', async (req, res) => {
+    const { title } = req.body;
 
-        res.json({ success: true });
+    if (!title) {
+        return res.status(400).send('Title is required');
+    }
+
+    try {
+        await pool.query('INSERT INTO thread (title, created_at) VALUES (?, NOW())', [title]);
+        res.status(201).send('Topic created successfully');
+    } catch (error) {
+        console.error('Error creating topic:', error);
+        res.status(500).send('Server error');
+    }
+});
+
+app.delete('/delete-topic/:id', async (req, res) => {
+    const topicId = req.params.id;
+
+    try {
+        const [result] = await pool.query('DELETE FROM thread WHERE id = ?', [topicId]);
+
+        if (result.affectedRows > 0) {
+            res.status(200).send('Topic deleted successfully');
+        } else {
+            res.status(404).send('Topic not found');
+        }
     } catch (error) {
         console.error('Error deleting topic:', error);
-        res.status(500).json({ message: 'トピックの削除に失敗しました' });
+        res.status(500).send('Server error');
     }
 });
 
