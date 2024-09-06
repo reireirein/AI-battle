@@ -9,6 +9,11 @@
 <body>
     <div id="topic-list-container">
         <h1>議論トピック一覧</h1>
+        <button id="new-thread-btn" class="button">新しいスレッドを作成</button>
+        <div id="new-thread-form" style="display: none;">
+            <input type="text" id="new-topic-input" placeholder="新しいお題を入力してください">
+            <button id="create-thread-btn" class="button">作成</button>
+        </div>
         <table id="topic-table">
             <thead>
                 <tr>
@@ -17,15 +22,11 @@
                     <th>アクション</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr>
-                    <td>無人島に1つだけ持っていくなら何？</td>
-                    <td>2024-07-01</td>
-                    <td><a href="/debate.html?topic=desert-island" class="button">議論に参加</a></td>
-                </tr>
-                <!-- 他のトピックをここに追加 -->
+            <tbody id="topic-list">
+                <!-- トピックリストはJavaScriptで動的に生成されます -->
             </tbody>
         </table>
     </div>
+    <script src="index.js"></script>
 </body>
 </html>

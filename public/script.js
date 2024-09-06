@@ -5,8 +5,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const playerSelect = document.getElementById('player-select');
     const judgeButton = document.getElementById('judge-button');
     const resultDiv = document.getElementById('result');
+    const debateTopicElement = document.getElementById('debate-topic');
 
     let chatHistory = [];
+    let currentTopic = '';
+
+    // URLからトピックを取得
+    const urlParams = new URLSearchParams(window.location.search);
+    const topicId = urlParams.get('topic');
+
+    // トピックを設定
+    const topics = JSON.parse(localStorage.getItem('topics')) || [];
+    const topic = topics.find(t => t.id === topicId);
+    if (topic) {
+        currentTopic = topic.title;
+    } else {
+        currentTopic = 'トピックが見つかりません';
+    }
+
+    // トピックを表示
+    debateTopicElement.textContent = `議論：${currentTopic}`;
 
     chatForm.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -39,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ chatHistory }),
+                body: JSON.stringify({ chatHistory, topic: currentTopic }),
             });
             const data = await response.json();
             return data.result;

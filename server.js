@@ -1,45 +1,47 @@
 const express = require('express');
+const mysql = require('mysql2/promise');
 const bodyParser = require('body-parser');
-const path = require('path');
-const { GoogleGenerativeAI } = require('@google/generative-ai');
-
 const app = express();
 const port = 3000;
 
-app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.json());
+app.use(express.static('public'));
 
-// Gemini APIの設定
-const genAI = new GoogleGenerativeAI('AIzaSyCqDC2XtcMYTI3NLXx2gD_krEd3YIYC1YQ');
-const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+// MySQL データベース接続
+const dbConfig = {
+    host: 'localhost',
+    user: 'root',
+    password: '',
+    database: 'chat_battle'
+};
 
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+// トピックの取得
+app.get('/topics', async (req, res) => {
+    const connection = await mysql.createConnection(dbConfig);
+    const [rows] = await connection.execute('SELECT id, title, created_at FROM thread ORDER BY created_at DESC');
+    await connection.end();
+    res.json(rows);
 });
 
-app.post('/judge', async (req, res) => {
-    try {
-        const { chatHistory, topic } = req.body;
-        const prompt = `
-            次の議論を分析し、客観的に勝者を判断してください。議論のテーマは「${topic}」です。
-            プレイヤーAとプレイヤーBの主張を評価し、より説得力のある議論を展開した方を勝者としてください。
-            引き分けの場合は「引き分け」と判断してください。
-            チャット履歴:
-            ${chatHistory.map(msg => `プレイヤー${msg.player}: ${msg.message}`).join('\n')}
+// トピックの作成
+app.post('/create-topic', async (req, res) => {
+    const { title } = req.body;
+    const createdAtUTC = new Date().toISOString(); // UTC time
+    const connection = await mysql.createConnection(dbConfig);
+    const [result] = await connection.execute('INSERT INTO thread (title, created_at) VALUES (?, ?)', [title, createdAtUTC]);
+    await connection.end();
+    const createdAtJP = new Date(createdAtUTC).toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }).replace(/\//g, '-');
+    res.json({ success: true, id: result.insertId, title, date: createdAtJP });
+});
 
-            判断結果を以下の形式で返してください：
-            勝者: [プレイヤーA or プレイヤーB or 引き分け]
-            理由: [簡潔な説明]
-        `;
 
-        const result = await model.generateContent(prompt);
-        const judgement = result.response.text();
-
-        res.json({ result: judgement });
-    } catch (error) {
-        console.error('Error:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
+// トピックの削除
+app.delete('/delete-topic/:id', async (req, res) => {
+    const { id } = req.params;
+    const connection = await mysql.createConnection(dbConfig);
+    await connection.execute('DELETE FROM thread WHERE id = ?', [id]);
+    await connection.end();
+    res.json({ success: true });
 });
 
 app.listen(port, () => {
