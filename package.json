@@ -1,11 +1,17 @@
 {
   "dependencies": {
     "@google/generative-ai": "^0.14.0",
+<<<<<<< HEAD
     "axios": "^1.7.7",
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.2",
     "cookie-parser": "^1.4.6",
     "dotenv": "^16.4.5",
+=======
+    "bcrypt": "^5.1.1",
+    "body-parser": "^1.20.2",
+    "cookie-parser": "^1.4.6",
+>>>>>>> 98bdaaf2196d5411a2fc68562712a5030974a427
     "express": "^4.19.2",
     "express-mysql-session": "^2.1.8",
     "express-session": "^1.18.0",

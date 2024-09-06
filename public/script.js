@@ -1,3 +1,4 @@
+// script.js
 document.addEventListener('DOMContentLoaded', () => {
     const chatForm = document.getElementById('chat-form');
     const userInput = document.getElementById('user-input');
@@ -12,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // URLからトピックを取得
     const urlParams = new URLSearchParams(window.location.search);
+<<<<<<< HEAD
     const topicId = urlParams.get('topic');
 
     // トピックを設定
@@ -25,6 +27,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // トピックを表示
     debateTopicElement.textContent = `議論：${currentTopic}`;
+=======
+    const topicTitle = urlParams.get('title') || 'トピックが見つかりません';
+
+    // トピックを表示
+    debateTopicElement.textContent = `議論：${decodeURIComponent(topicTitle)}`;
+>>>>>>> 98bdaaf2196d5411a2fc68562712a5030974a427
 
     chatForm.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -57,7 +65,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
+<<<<<<< HEAD
                 body: JSON.stringify({ chatHistory, topic: currentTopic }),
+=======
+                body: JSON.stringify({ chatHistory, topic: topicTitle }),
+>>>>>>> 98bdaaf2196d5411a2fc68562712a5030974a427
             });
             const data = await response.json();
             return data.result;

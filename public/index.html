@@ -1,3 +1,4 @@
+<!-- index.html -->
 <!DOCTYPE html>
 <html lang="ja">
 
@@ -9,17 +10,8 @@
 </head>
 
 <body>
-    <main id="topic-list-container">
-        <header>
-            <h1>議論トピック一覧</h1>
-            <button id="new-thread-btn" class="button" aria-expanded="false"
-                aria-controls="new-thread-form">新しいスレッドを作成</button>
-        </header>
-        <section id="new-thread-form" aria-hidden="true">
-            <label for="new-topic-input">新しいお題を入力してください:</label>
-            <input type="text" id="new-topic-input" placeholder="新しいお題を入力してください">
-            <button id="create-thread-btn" class="button">作成</button>
-        </section>
+    <div id="topic-list-container">
+        <h1>議論トピック一覧</h1>
         <table id="topic-table">
             <thead>
                 <tr>
@@ -32,8 +24,7 @@
                 <!-- トピックリストはJavaScriptで動的に生成されます -->
             </tbody>
         </table>
-    </main>
-    <script src="index.js"></script>
+    </div>
 </body>
 
 </html>
