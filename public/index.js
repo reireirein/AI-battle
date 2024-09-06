@@ -11,24 +11,23 @@ document.addEventListener('DOMContentLoaded', () => {
         newThreadForm.style.display = 'block';
     });
 
-    createThreadBtn.addEventListener('click', async () => {
+    createThreadBtn.addEventListener('click', createTopic);
+
+    async function createTopic() {
         const newTopic = newTopicInput.value.trim();
         if (newTopic) {
             try {
                 const response = await fetch('/create-topic', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ title: newTopic }),
                 });
+                if (!response.ok) {
+                    throw new Error('ネットワークエラーが発生しました');
+                }
                 const data = await response.json();
                 if (data.success) {
-                    topics.unshift({
-                        id: data.id,
-                        title: data.title,
-                        created_at: data.date
-                    });
+                    topics.unshift({ id: data.id, title: data.title, created_at: data.date });
                     renderTopics();
                     newTopicInput.value = '';
                     newThreadForm.style.display = 'none';
@@ -36,20 +35,25 @@ document.addEventListener('DOMContentLoaded', () => {
                     alert('トピックの作成に失敗しました');
                 }
             } catch (error) {
-                console.error('Error:', error);
-                alert('エラーが発生しました');
+                console.error('エラー:', error);
+                alert('エラーが発生しました: ' + error.message);
             }
+        } else {
+            alert('お題を入力してください');
         }
-    });
+    }
 
     async function fetchTopics() {
         try {
             const response = await fetch('/topics');
+            if (!response.ok) {
+                throw new Error('ネットワークエラーが発生しました');
+            }
             topics = await response.json();
             renderTopics();
         } catch (error) {
-            console.error('Error fetching topics:', error);
-            alert('トピックの取得に失敗しました');
+            console.error('トピック取得エラー:', error);
+            alert('トピックの取得に失敗しました: ' + error.message);
         }
     }
 
@@ -67,15 +71,17 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
             topicList.appendChild(row);
         });
+        setupEventListeners();
+    }
 
-        // 削除ボタンにイベントリスナーを追加
-        document.querySelectorAll('.delete-btn').forEach(btn => {
-            btn.addEventListener('click', async (e) => {
+    function setupEventListeners() {
+        topicList.addEventListener('click', async (e) => {
+            if (e.target.classList.contains('delete-btn')) {
                 const topicId = e.target.getAttribute('data-id');
                 if (confirm('このスレッドを削除してもよろしいですか？')) {
                     await deleteTopic(topicId);
                 }
-            });
+            }
         });
     }
 
@@ -84,6 +90,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch(`/delete-topic/${topicId}`, {
                 method: 'DELETE'
             });
+            if (!response.ok) {
+                throw new Error('ネットワークエラーが発生しました');
+            }
             const data = await response.json();
             if (data.success) {
                 topics = topics.filter(topic => topic.id !== parseInt(topicId));
@@ -92,8 +101,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('トピックの削除に失敗しました');
             }
         } catch (error) {
-            console.error('Error deleting topic:', error);
-            alert('エラーが発生しました');
+            console.error('エラー:', error);
+            alert('エラーが発生しました: ' + error.message);
         }
     }
 
